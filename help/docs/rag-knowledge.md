@@ -3,7 +3,7 @@
 本指南介绍如何将文档上传到服务端进行解析与向量入库，并说明中文文件名与重复上传的处理策略。
 
 ## 1. 前置条件
-- JDK 21+、Maven 3.9+
+- JDK 25+、Maven 3.9+
 - Redis（建议使用本仓库的 redis-stack）：
   - 启动：`docker-compose up -d`
   - UI: http://localhost:8380  密码：`your-pwd`

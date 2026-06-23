@@ -1,7 +1,7 @@
 # spring-boot4-mcp-demo
 
-![jdk 21](https://img.shields.io/static/v1?label=jdk&message=21&color=blue)
-![spring-boot](https://img.shields.io/static/v1?label=spring-boot&message=4.0.7&color=green)
+![jdk 25](https://img.shields.io/static/v1?label=jdk&message=25&color=blue)
+![spring-boot](https://img.shields.io/static/v1?label=spring-boot&message=4.1.0&color=green)
 ![spring-ai](https://img.shields.io/static/v1?label=spring-ai&message=2.0.0&color=green)
 ![dotenv-java](https://img.shields.io/static/v1?label=dotenv-java&message=3.2.0&color=blue)
 ![postman](https://img.shields.io/static/v1?label=postman&message=v11.70.5&color=FF6C37)
@@ -45,7 +45,7 @@ spring-boot4-mcp-demo/
 
 ### Prerequisites
 
-- JDK 21+
+- JDK 25+
 - Maven 3.9+
 - Docker（用于 Redis Stack）
 - Node.js (用于部分MCP服务器)
@@ -183,9 +183,9 @@ For further reference, please consider the following sections:
 
 * https://github.com/searxng/searxng
 * [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/4.0.7/maven-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/4.0.7/maven-plugin/build-image.html)
-* [Spring Web](https://docs.spring.io/spring-boot/4.0.7/reference/web/servlet.html)
+* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/4.1.0/maven-plugin)
+* [Create an OCI image](https://docs.spring.io/spring-boot/4.1.0/maven-plugin/build-image.html)
+* [Spring Web](https://docs.spring.io/spring-boot/4.1.0/reference/web/servlet.html)
 * https://github.com/leehainuo/spring-ai-redis-starter
 
 ### Guides
