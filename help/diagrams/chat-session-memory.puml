@@ -1,0 +1,88 @@
+@startuml
+title 会话记忆机制 - Session Memory Flow
+
+actor "用户" as User
+participant "ChatController\n/api/chat/q" as Ctrl
+participant "DeepseekChatClient" as Deepseek
+participant "MessageChatMemoryAdvisor" as Advisor
+database "Redis ChatMemory\nkey = default" as Redis
+participant "DeepSeek LLM" as LLM
+
+== 第1轮对话：用户发问 ==
+
+User -> Ctrl : GET /api/chat/q?question=你好
+Ctrl -> Deepseek : q("你好")
+
+Deepseek -> Advisor : before()
+note right
+  advisor.before(prompt):
+  从 Redis 加载历史消息
+  拼接到 System Prompt 之后
+end note
+Advisor -> Redis : get("default")
+Redis --> Advisor : [] (空列表，无历史)
+Advisor --> Deepseek : prompt = [sys + "你好"]
+
+Deepseek -> LLM : call model(prompt)
+LLM --> Deepseek : "你好！很高兴为你服务..."
+
+Deepseek -> Advisor : after(response)
+note right
+  advisor.after(response):
+  将本轮对话写入 Redis
+  [userMsg("你好"), assistantMsg("...")]
+end note
+Advisor -> Redis : add("default", [userMsg, assistantMsg])
+Advisor --> Deepseek : ok
+
+Deepseek --> Ctrl : "你好！很高兴为你服务..."
+Ctrl --> User : 200 OK
+
+== 第2轮对话：用户询问历史 ==
+
+User -> Ctrl : GET /api/chat/q?question=我刚刚问你的是什么
+Ctrl -> Deepseek : q("我刚刚问你的是什么")
+
+Deepseek -> Advisor : before()
+Advisor -> Redis : get("default")
+Redis --> Advisor : ["你好", "你好！很高兴为你..."]
+note right
+  历史消息已存在！
+  包含上一轮的 USER + ASSISTANT 消息
+end note
+Advisor --> Deepseek : prompt = [sys + "你好" + "你好！很高兴为你..." + "我刚刚问你的是什么"]
+
+Deepseek -> LLM : call model(prompt)
+LLM --> Deepseek : "你刚刚问的是：'你好'..."
+
+Deepseek -> Advisor : after(response)
+Advisor -> Redis : add("default", [userMsg, assistantMsg])
+Advisor --> Deepseek : ok
+
+Deepseek --> Ctrl : "你刚刚问的是：'你好'..."
+Ctrl --> User : 200 OK
+
+== 问题场景：多用户并发 ==
+
+User -> Ctrl : GET /api/chat/q?question=... (用户B)
+note over Deepseek
+  用户B的请求也使用 conversationId = "default"
+  与用户A读写同一条 Redis List
+  用户B的请求会带上用户A的历史消息
+  会话数据互相污染！
+end note
+
+note right of Redis
+  Redis 存储结构：
+  key:  "default"
+  type: List
+  len:  168 条消息
+  
+  内容截取:
+  [USER] "你好"
+  [ASSISTANT] "你好！很高兴..."
+  [USER] "今天天气怎么样"
+  ...
+end note
+
+@enduml

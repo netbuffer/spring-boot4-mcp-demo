@@ -1,0 +1,90 @@
+### 测试ChatController的q接口
+GET http://localhost:8081/api/chat/q?question=你好
+Accept: application/json
+
+### 测试不同问题
+GET http://localhost:8081/api/chat/q?question=今天天气怎么样
+Accept: application/json
+
+### 测试streamq接口
+GET http://localhost:8081/api/chat/streamq?question=世界上最好的编程语言是什么
+Accept: application/json
+
+### 测试空问题
+GET http://localhost:8081/api/chat/q?question=
+Accept: application/json
+
+### 测试通过SSE发送消息给指定用户
+POST http://localhost:8081/api/chat/sse/send?userId=10000
+Content-Type: application/json
+
+{
+  "userId": 10000,
+  "message": "中文内容"
+}
+
+### /rag/knowledge/create
+POST http://localhost:8081/rag/knowledge/create
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="some-key"
+Content-Type: text/plain
+
+some-value
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="zhishiku1.docx"; filename*=UTF-8''%E7%9F%A5%E8%AF%86%E5%BA%931.docx
+Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+
+< ../docs/知识库1.docx
+--WebAppBoundary--
+
+### /rag/knowledge/search
+GET http://localhost:8081/rag/knowledge/search?q=问些问题
+
+### /rag/ask
+GET http://localhost:8081/rag/ask?question=软件开发一个月能赚多少钱？
+
+### /SearXNG/search
+GET http://localhost:8081/SearXNG/search?q=软件开发一个月能赚多少钱？&llmEnhanced=true&llmModel=deepseek
+
+### /SearXNG/search (POST)
+POST http://localhost:8081/SearXNG/search
+Content-Type: application/json
+
+{
+    "query": "软件开发一个月能赚多少钱？",
+    "llmEnhanced": true,
+    "llmModel": "openai"
+  }
+
+### SearXNG控制器健康检查
+GET http://localhost:8081/SearXNG/health
+
+### 测试MCP创建文件到本地文件系统
+GET http://localhost:8081/api/chat/q?question=创建hello.txt到本地，并写入"Hello World"和当前时间戳字符串
+Accept: application/json
+
+### 查看微博热点
+GET http://localhost:8081/api/chat/q?question=查看微博热点
+Accept: application/json
+
+### fetch网页内容
+GET http://localhost:8081/api/chat/q?question=获取网页内容：https://aliyun.com
+Accept: application/json
+
+### 获取当前时间
+GET http://localhost:8081/api/chat/q?question=美国东部当前时间
+Accept: application/json
+
+### 查询北京故宫周边的美食
+GET http://localhost:8081/api/chat/q?question=查询北京故宫周边的美食
+Accept: application/json
+
+### 查询当前时间
+GET http://localhost:8081/api/chat/q?question=查询当前时间
+Accept: application/json
+
+### 测试记忆能力
+GET http://localhost:8081/api/chat/q?question=我刚刚问你的是什么
+Accept: application/json

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "mcp-server2-stdio": {
+      "command": "java",
+      "args": [
+        "-jar",
+        "help/jars/mcp-server2.jar"
+      ]
+    }
+  }
+}

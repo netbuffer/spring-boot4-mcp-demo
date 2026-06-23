@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: mcp-server2
+  ai:
+    mcp:
+      server:
+        enabled: true
+        name: mcp-server2
+        version: 1.0.0
+        stdio: true
+  main:
+    banner-mode: off
+    web-application-type: none
+
+logging:
+  level:
+    root: OFF
+
+forest:
+  max-connections: 100
+  max-route-connections: 50
+  connect-timeout: 3000
+  read-timeout: 10000
+  log-request: true
+  log-response-status: true
+  log-response-content: true

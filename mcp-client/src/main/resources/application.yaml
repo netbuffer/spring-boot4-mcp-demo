@@ -1,0 +1,99 @@
+server:
+  port: 8081
+
+spring:
+  autoconfigure:
+    exclude: org.springframework.ai.model.openai.autoconfigure.OpenAiEmbeddingAutoConfiguration
+  application:
+    name: mcp-client
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 11MB
+    encoding:
+      charset: UTF-8
+      force-request: true
+      force-response: true
+  ai:
+    chat:
+      memory:
+        redis:
+          enabled: true
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      base-url: https://api.openai.com/v1
+      chat:
+        max-tokens: 1024
+        temperature: 0.7
+        top-p: 1.0
+        model: gpt-4o-mini
+    deepseek:
+      api-key: ${DEEPSEEK_API_KEY}
+      base-url: https://api.deepseek.com
+      chat:
+        max-tokens: 1024
+        temperature: 0.7
+        model: deepseek-chat
+    vectorstore:
+      redis:
+        index-name: sb4md-v
+        prefix: "vtr:"
+    embedding:
+      transformer:
+        cache:
+          enabled: true
+          directory: .env/transformer-cache
+    mcp:
+      client:
+        enabled: true
+        request-timeout: 60s
+        type: SYNC
+        toolcallback:
+          enabled: true
+        stdio:
+          connections:
+            mcp-server2:
+              command: java
+              args:
+                - -jar
+                - help/jars/mcp-server2.jar
+#        streamable-http:
+#          connections:
+#            baidu-map-server:
+#              url: https://mcp.map.baidu.com
+#              endpoint: ${BAIDU_MAP_API_KEY}
+        sse:
+          connections:
+            mcp-server1:
+              url: http://localhost:8082
+              sse-endpoint: /sse
+
+  data:
+    redis:
+      client-type: jedis
+      host: 127.0.0.1
+      port: 8379
+      password: your-pwd
+
+logging:
+  level:
+    root: INFO
+    cn.netbuffer: DEBUG
+    org.springframework.ai: DEBUG
+    io.modelcontextprotocol.client: DEBUG
+    io.modelcontextprotocol.spec: DEBUG
+  charset:
+    console: UTF-8
+    file: UTF-8
+
+forest:
+  max-connections: 100
+  max-route-connections: 50
+  connect-timeout: 3000
+  read-timeout: 10000
+  log-request: true
+  log-response-status: true
+  log-response-content: true
+  variables:
+    searxng:
+      url: http://127.0.0.1:8381

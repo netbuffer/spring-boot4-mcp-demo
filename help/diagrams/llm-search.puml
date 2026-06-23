@@ -1,0 +1,50 @@
+@startuml
+
+title 基于SearXNG结合LLM实现联网搜索架构图
+
+skinparam backgroundColor white
+
+actor 用户 as user
+
+' API控制层
+package "API控制层" {
+  [SearXNGController]
+}
+
+' 服务层
+package "服务层" as service {
+  [SearXNGService]
+}
+
+' 客户端层
+package "客户端层" as api_clients {
+  [SearXNGClient]
+  [LLMChatClient]
+  [OpenAIChatClient]
+  [DeepseekChatClient]
+}
+
+' 数据模型
+package "数据模型" {
+  [SearXNGRequest]
+  [SearXNGResult]
+  [ApiResponse]
+}
+
+' 外部服务
+cloud "外部服务" as external {
+  [SearXNG搜索引擎]
+  [OpenAI API]
+  [Deepseek API]
+}
+
+' 调用关系
+user --> [SearXNGController]
+[SearXNGController] --> service
+service-->api_clients
+api_clients-->external
+[SearXNGClient] -.-> [LLMChatClient]: prompt
+[OpenAIChatClient] <.- [LLMChatClient]
+[DeepseekChatClient] <.- [LLMChatClient]
+
+@enduml

@@ -1,0 +1,54 @@
+@startuml
+title Spring Boot4 MCP Demo - 系统架构图
+
+skinparam packageStyle rectangle
+skinparam backgroundColor white
+skinparam linetype ortho
+
+actor "用户" as User
+
+package "MCP Client (port 8081)" as Client {
+  component "Controllers" as Ctrl
+
+  rectangle "服务层" {
+    component ChatClient as ChatClient
+    component RAGService as RAGSvc
+    component SearXNGService as SearXNSvc
+    component SSEServerComponent as SSE
+  }
+}
+
+package "MCP 服务器" as MCP {
+  component "mcp-server1\nSSE :8082" as S1
+  component "mcp-server2\nStdio" as S2
+  component "百度地图 MCP" as Baidu
+}
+
+database "Redis Stack\n向量存储\n记忆存储\n:8379" as Redis
+database "SearXNG\n搜索引擎\n:8381" as SearXNG
+
+User --> Ctrl : HTTP 请求
+
+ChatClient --> MCP : MCP 工具调用
+ChatClient <--> Redis : 读写对话记忆
+
+ChatClient --> MCP : MCP 工具调用(无记忆)
+
+RAGSvc --> Redis : 向量存储
+RAGSvc --> ChatClient : LLM 增强回答
+
+SearXNSvc --> SearXNG : HTTP 搜索
+SearXNSvc --> ChatClient : AI 总结搜索结果
+
+note right of Ctrl
+  ChatController → ChatClient / ChatClient : 聊天
+  RAGController → RAGSvc : 知识库
+  SearXNGController → SearXNSvc : 搜索
+  SSEController → SSE : 推送
+end note
+
+note right of ChatClient
+  会话 ID 隔离多租户多用户数据
+end note
+
+@enduml

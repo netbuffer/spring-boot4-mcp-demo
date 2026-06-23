@@ -1,0 +1,112 @@
+@startuml
+title Spring AI 2.0 Advisor Chain 原理时序图
+
+skinparam backgroundColor white
+
+actor 用户 as User
+participant ChatClient as Client
+participant DefaultAroundAdvisorChain as Chain
+participant "MessageChatMemoryAdvisor" as MCM
+participant "ToolCallingAdvisor" as TCA
+participant "SimpleLoggerAdvisor" as SLA
+participant "SafeGuardAdvisor\n(可选)" as SGA
+participant "ChatModelCallAdvisor" as Terminal
+participant "DeepSeek / LLM" as LLM
+database "Redis\nChatMemory" as Redis
+
+== 非流式调用：client.prompt(q).call().content() ==
+
+User -> Client : 发送消息
+Client -> Chain : nextCall(request)
+
+Chain -> TCA : adviseCall(req, chain)
+note right of TCA
+  能力：
+  ✅ 动态注入 MCP 工具定义到 prompt
+  ✅ 工具调用循环（反复调 LLM 直到无 tool_calls）
+  ✅ 流式工具响应支持
+end note
+
+TCA -> TCA : before() → 注入工具定义
+TCA -> MCM : chain.copy(this).nextCall(req)
+
+note right of MCM
+  能力：
+  ✅ 动态组装 prompt：加载历史消息拼入
+  ✅ 持久化：将本轮对话写回 Redis
+  ✅ 惰性截断（LastMaxTokenSizeContentPurger）
+end note
+
+MCM -> Redis : get(conversationId)
+Redis --> MCM : 历史消息列表
+MCM -> MCM : before() → 拼接历史到 prompt
+MCM -> SLA : nextCall(req)
+
+note right of SLA
+  能力：
+  ✅ 请求/响应日志记录
+  ✅ 链路追踪辅助
+end note
+
+SLA -> SLA : before() → 记录请求日志
+SLA -> Terminal : nextCall(req)
+
+note right of Terminal
+  能力：
+  链的终端节点
+  实际调用 LLM API
+end note
+
+Terminal -> LLM : chatModel.call(prompt)
+LLM --> Terminal : 原始响应
+
+SLA -> SLA : after() → 记录响应日志
+SLA --> MCM
+
+MCM -> MCM : after() → 本轮写入 Redis
+MCM -> Redis : add(conversationId, msg)
+MCM --> TCA
+
+TCA -> TCA : after() → 检查 tool_calls
+note right
+  有工具调用?
+  ──────────
+  YES → 执行 MCP 工具
+         再次遍历链 (copy+next)
+         回到 before 阶段
+  NO  → 返回最终响应
+end note
+
+TCA --> Chain : ChatClientResponse
+Chain --> Client : content()
+Client --> User : 回答文本
+
+== Advisor 还能做什么（本系统未使用） ==
+
+note over SGA
+  SafeGuardAdvisor
+  ✅ 敏感词过滤 / 数据清洗
+  ✅ 请求内容安全检测
+  ✅ 阻断非法输入后再返回
+end note
+
+note over Client
+  其他内置 Advisor：
+  ─────────────────────
+  PromptChatMemoryAdvisor → 将历史注入 System Prompt
+  QuestionAnswerAdvisor   → RAG 检索增强
+  StructuredOutputValidationAdvisor → JSON Schema 校验+重试
+  VectorStoreChatMemoryAdvisor → 向量库记忆
+end note
+
+== 本项目实际链概览 ==
+
+note over TCA, Terminal
+  运行时链顺序 (order 升序)：
+  [HIGH+1000] MessageChatMemoryAdvisor  ← 用户注册
+  [HIGH+300 ] ToolCallingAdvisor         ← defaultTools 自动注册
+  [0        ] SimpleLoggerAdvisor        ← 用户注册
+  [LOW      ] ChatModelCallAdvisor       ← 内部终端
+end note
+
+@enduml

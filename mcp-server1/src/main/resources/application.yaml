@@ -1,0 +1,36 @@
+server:
+  port: 8082
+  servlet:
+    encoding:
+      charset: UTF-8
+      force-request: true
+      force-response: true
+
+spring:
+  application:
+    name: mcp-server1
+  ai:
+    mcp:
+      server:
+        enabled: true
+        name: mcp-server1
+        version: 1.0.0
+        sse-endpoint: /sse
+
+logging:
+  level:
+    root: INFO
+    cn.netbuffer: DEBUG
+    org.springframework.ai: DEBUG
+  charset:
+    console: UTF-8
+    file: UTF-8
+
+forest:
+  max-connections: 100
+  max-route-connections: 50
+  connect-timeout: 3000
+  read-timeout: 10000
+  log-request: true
+  log-response-status: true
+  log-response-content: true

@@ -1,0 +1,25 @@
+version: '3.9'
+services:
+  redis-stack:
+    container_name: redis-stack
+    hostname: redis-stack
+    image: redis/redis-stack:7.4.0-v8
+    ports:
+      - "8379:6379"
+      - "8380:8001"
+    environment:
+      - REDIS_ARGS=--requirepass your-pwd
+    volumes:
+      - .env/redis-stack/data:/data
+  searxng:
+    hostname: searxng
+    container_name: searxng
+    image: searxng/searxng:2026.6.20-fd42d4fda
+    ports:
+      - "8381:8080"
+    environment:
+      - BASE_URL=http://localhost:8381
+      - INSTANCE_NAME=searxng-1
+    volumes:
+      - '.env/searxng/data/:/var/cache/searxng/'
+      - '.env/searxng/config/:/etc/searxng/'
