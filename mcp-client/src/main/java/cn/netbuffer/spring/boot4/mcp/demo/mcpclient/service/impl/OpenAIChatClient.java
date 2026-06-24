@@ -3,25 +3,39 @@ package cn.netbuffer.spring.boot4.mcp.demo.mcpclient.service.impl;
 import cn.netbuffer.spring.boot4.mcp.demo.mcpclient.service.LLMChatClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.openai.OpenAiChatModel;
+import org.springframework.ai.template.ValidationMode;
+import org.springframework.ai.template.st.StTemplateRenderer;
 import org.springframework.ai.tool.ToolCallbackProvider;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 
-/**
- * OpenAI 聊天客户端实现
- * <p>集成 OpenAI 大模型，支持 MCP Tool 调用</p>
- */
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
+
 @Slf4j
 @Component
 public class OpenAIChatClient implements LLMChatClient {
 
     private ChatClient openAiChatClient;
 
-    public OpenAIChatClient(OpenAiChatModel openAiChatModel,ToolCallbackProvider toolCallbackProvider) {
+    public OpenAIChatClient(OpenAiChatModel openAiChatModel, ToolCallbackProvider toolCallbackProvider) {
+        StTemplateRenderer renderer = StTemplateRenderer.builder()
+                .validationMode(ValidationMode.NONE)
+                .build();
+        PromptTemplate systemPrompt = PromptTemplate.builder()
+                .resource(new ClassPathResource("prompts/chat-system.st"))
+                .renderer(renderer)
+                .build();
+        String renderedSystem = systemPrompt.render(Map.of(
+                "currentDateTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+        ));
         this.openAiChatClient = ChatClient.builder(openAiChatModel)
                 .defaultTools(toolCallbackProvider)
-                .defaultSystem("你是一个全能的人工智能助手，可以回答任何问题。")
+                .defaultSystem(renderedSystem)
                 .build();
         log.info("init OpenAIChatClient");
     }
