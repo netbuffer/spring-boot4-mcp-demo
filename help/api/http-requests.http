@@ -88,3 +88,7 @@ Accept: application/json
 ### 测试记忆能力
 GET http://localhost:8081/api/chat/q?question=我刚刚问你的是什么
 Accept: application/json
+
+### 清空对话记忆
+DELETE http://localhost:8081/api/chat/memory?conversationId=default
+Accept: application/json
