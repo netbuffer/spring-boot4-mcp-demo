@@ -19,7 +19,7 @@
   - 使用向量数据库（Redis）存储向量；按文档名进行"幂等覆盖"，重复上传仅保留最新一版
 
 ## 3. 中文文件名的正确传递（IDEA HTTP Client 示例）
-在 `help/http-requests.http` 中使用如下写法，确保中文文件名不会乱码：
+在 `help/api/http-requests.http` 中使用如下写法，确保中文文件名不会乱码：
 
 ```
 POST http://localhost:8081/rag/knowledge/create

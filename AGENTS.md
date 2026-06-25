@@ -76,7 +76,7 @@ mcp-client (8081)
 - **Redis Stack**: 端口 8379 (数据) / 8380 (UI), 密码 `your-pwd`
 - **SearXNG**: 端口 8381
 - **OpenAI API** / **DeepSeek API**: 环境变量注入
-- **百度地图 MCP API**: 环境变量注入
+- **百度地图 MCP API**: 环境变量注入（Streamable HTTP，默认注释，启用需取消 `application.yaml` 注释并配置 `BAIDU_MAP_API_KEY`）
 
 ---
 
@@ -161,7 +161,9 @@ public static String getCurrentDateTime() { ... }
 
 ### 6.4 API 路径规范
 
-- LLM 聊天：`/api/chat/*`
+- LLM 聊天：`/api/chat/q`, `/api/chat/streamq`
+- 古诗推荐（结构化输出）：`/api/chat/poems`
+- 聊天记忆管理：`/api/chat/memory`
 - 知识库 RAG：`/rag/*`
 - SearXNG 搜索：`/SearXNG/*`
 - SSE 推送：`/api/chat/sse/*`
@@ -272,9 +274,15 @@ public XxxClient(XxxChatModel chatModel, ToolCallbackProvider toolCallbackProvid
 
 ### 10.2 环境变量
 
-- 统一在模块根目录放置 `{module-name}.env` 文件
+- 统一在模块 `src/main/resources/` 目录放置 `{module-name}.env` 文件
 - 启动类通过 `DotEnvUtils.initDotEnv2SystemProperty("{module-name}.env")` 加载
 - `.env` 目录已加入 `.gitignore`
+- 环境变量模板见 `help/templates/mcp-client.template.env`
+- 关键环境变量：
+  - `OPENAI_API_KEY` — OpenAI API 密钥
+  - `DEEPSEEK_API_KEY` — DeepSeek API 密钥
+  - `DEEPSEEK_API_URL` — DeepSeek API 地址（默认 `https://api.deepseek.com`）
+  - `BAIDU_MAP_API_KEY` — 百度地图 MCP API 参数（可选，默认注释）
 
 ---
 

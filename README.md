@@ -35,11 +35,25 @@ spring-boot4-mcp-demo/
 ├── mcp-server2/         # MCP服务器实现（标准IO支持）
 │   └── src/main/resources/application.yaml
 ├── help/
-│   ├── http-requests.http               # IDEA HTTP Client 测试集合
-│   ├── spring-boot4-mcp-demo.postman_collection.json  # Postman测试集合
-│   ├── rag-knowledge.md                 # RAG知识库说明
-│   └── *.png                            # 项目截图资源
-├── docker-compose.yaml  # Redis Stack（向量存储）
+│   ├── api/
+│   │   ├── http-requests.http                 # IDEA HTTP Client 测试集合
+│   │   └── postman/
+│   │       └── spring-boot4-mcp-demo.postman_collection.json  # Postman测试集合
+│   ├── docs/
+│   │   ├── rag-knowledge.md                   # RAG知识库说明
+│   │   └── 知识库1.docx                       # 示例知识库文档
+│   ├── diagrams/
+│   │   ├── architecture.puml                  # 系统架构图
+│   │   ├── chat-session-memory.puml           # 聊天记忆时序图
+│   │   ├── chat-redis-data.puml               # Redis数据模型
+│   │   ├── llm-search.puml                    # LLM搜索流
+│   │   └── spring-ai-advisors.puml            # Advisor链
+│   ├── images/                                # 项目截图资源
+│   ├── jars/
+│   │   └── mcp-server2.jar                    # 预制 Stdio MCP Server
+│   └── templates/
+│       └── mcp-client.template.env            # 环境变量模板
+├── docker-compose.yaml  # Redis Stack + SearXNG
 └── pom.xml
 ```
 
@@ -48,10 +62,9 @@ spring-boot4-mcp-demo/
 - JDK 25+
 - Maven 3.9+
 - Docker（用于 Redis Stack）
-- Node.js (用于部分MCP服务器)
-- Python 3.8+ (用于uvx工具)
 - 环境变量（可选）：
   - `OPENAI_API_KEY`、`DEEPSEEK_API_KEY`
+  - 详见 `help/templates/mcp-client.template.env`
 
 ### Build & Run
 
@@ -74,8 +87,8 @@ mvn spring-boot:run -pl mcp-client
 
 主配置文件：
 - `mcp-client/src/main/resources/application.yaml` - 主应用配置
-- `mcp-server1/src/main/resources/application.yaml` - MCP服务器配置
-- `mcp-servers.json` - MCP服务配置文件，定义可用的MCP服务器
+- `mcp-server1/src/main/resources/application.yaml` - MCP Server1 (SSE) 配置
+- `mcp-server2/src/main/resources/application.yaml` - MCP Server2 (Stdio) 配置
 
 关键项：
 - Server: port 8081，强制 UTF-8
@@ -87,18 +100,24 @@ mvn spring-boot:run -pl mcp-client
 ### API Endpoints
 
 - **Chat**
-  - GET `/api/chat/q?question=...` → String
-  - GET `/api/chat/streamq?question=...` → Server streaming text (Flux)
+  - GET `/api/chat/q?question=...` → String (DeepSeek, 带记忆和RAG)
+  - GET `/api/chat/streamq?question=...` → Flux (流式)
+  - GET `/api/chat/poems?count=3&dynasty=唐代` → ApiResponse<List<Poem>> (结构化输出)
+  - DELETE `/api/chat/memory?conversationId=default` → 清空对话记忆
 - **SSE**
   - GET `/api/chat/sse/events?userId=xxx` → SseEmitter
-  - POST `/api/chat/sse/send?userId=xxx` body `{ "userId": "...", "message": "..." }`
+  - POST `/api/chat/sse/send` body `{ "userId": "...", "message": "..." }` → boolean
 - **RAG 知识库**
   - POST `/rag/knowledge/create`（multipart/form-data）- 上传文档到知识库
     - 字段 `file`：文档（推荐 .docx）
   - GET `/rag/knowledge/search?q=...` → List<Document> - 检索相关文档
   - GET `/rag/ask?question=...` → String - 基于知识库的智能问答
+- **SearXNG 搜索引擎**
+  - GET `/SearXNG/search?q=...&llmEnhanced=true&llmModel=deepseek` → ApiResponse
+  - POST `/SearXNG/search` body `SearXNGRequest` → ApiResponse
+  - GET `/SearXNG/health` → ApiResponse
 
-测试示例见 `help/http-requests.http`，可直接在 IDEA 中运行。
+测试示例见 `help/api/http-requests.http`，可直接在 IDEA 中运行。
 
 ### RAG 行为说明（概要）
 

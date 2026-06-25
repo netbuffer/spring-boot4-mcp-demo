@@ -14,8 +14,8 @@ import org.springframework.context.annotation.Configuration;
 public class McpToolConfig {
 
     @Bean
-    public ToolCallbackProvider buildToolCallbackProvider(FileTool dateTimeTool) {
-        return MethodToolCallbackProvider.builder().toolObjects(dateTimeTool).build();
+    public ToolCallbackProvider buildToolCallbackProvider(FileTool fileTool) {
+        return MethodToolCallbackProvider.builder().toolObjects(fileTool).build();
     }
 
 }
