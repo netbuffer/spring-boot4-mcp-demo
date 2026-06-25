@@ -92,3 +92,7 @@ Accept: application/json
 ### 清空对话记忆
 DELETE http://localhost:8081/api/chat/memory?conversationId=default
 Accept: application/json
+
+### 测试结构化输出 - 推荐唐代古诗 (默认3首)
+GET http://localhost:8081/api/chat/poems?count=3&dynasty=唐
+Accept: application/json

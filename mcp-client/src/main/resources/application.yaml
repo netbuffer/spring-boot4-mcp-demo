@@ -29,7 +29,7 @@ spring:
         model: gpt-4o-mini
     deepseek:
       api-key: ${DEEPSEEK_API_KEY}
-      base-url: https://api.deepseek.com
+      base-url: ${DEEPSEEK_API_URL:https://api.deepseek.com}
       chat:
         max-tokens: 1024
         temperature: 0.7
