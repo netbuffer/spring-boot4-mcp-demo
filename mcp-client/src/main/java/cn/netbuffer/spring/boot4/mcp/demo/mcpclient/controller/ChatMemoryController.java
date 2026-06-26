@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/chat/memory")
 public class ChatMemoryController {
 
-    @Resource(name = "redisChatMemory")
+    @Resource
     private ChatMemory chatMemory;
 
     @DeleteMapping

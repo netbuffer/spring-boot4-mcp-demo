@@ -17,7 +17,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.mockito.Mockito;
 
 @SpringBootTest(classes = McpClientApplicationTests.MinimalContext.class,
-    properties = {"spring.ai.mcp.client.enabled=false", "spring.ai.openai.api-key=test", "spring.ai.deepseek.api-key=test"})
+    properties = {"spring.ai.mcp.client.enabled=false", "spring.ai.openai.api-key=test", "spring.ai.deepseek.api-key=test", "spring.main.allow-bean-definition-overriding=true", "spring.ai.chat.memory.redis.enabled=false"})
 @Import(McpClientApplicationTests.TestConfig.class)
 class McpClientApplicationTests {
 
@@ -29,7 +29,8 @@ class McpClientApplicationTests {
         "org.springframework.ai.mcp.client.common.autoconfigure.McpClientAutoConfiguration",
         "org.springframework.ai.model.tool.autoconfigure.ToolCallingAutoConfiguration",
         "org.springframework.ai.openai.autoconfigure.OpenAiChatAutoConfiguration",
-        "org.springframework.ai.model.deepseek.autoconfigure.DeepSeekChatAutoConfiguration"
+        "org.springframework.ai.model.deepseek.autoconfigure.DeepSeekChatAutoConfiguration",
+        "org.springframework.ai.model.chat.memory.redis.autoconfigure.RedisChatMemoryAutoConfiguration"
     })
     static class MinimalContext {
         public static void main(String[] args) {

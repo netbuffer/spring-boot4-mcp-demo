@@ -18,7 +18,17 @@ spring:
     chat:
       memory:
         redis:
-          enabled: true
+          max-conversation-ids: 3
+          max-messages-per-conversation: 3
+          metadata-fields:
+            - name: id
+              type: text
+            - name: messageType
+              type: tag
+            - name: finishReason
+              type: tag
+            - name: choiceIndex
+              type: numeric
     openai:
       api-key: ${OPENAI_API_KEY}
       base-url: https://api.openai.com/v1

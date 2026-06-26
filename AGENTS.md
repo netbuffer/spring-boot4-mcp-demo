@@ -96,12 +96,10 @@ ${module}:
   .service       — 业务接口
   .service.impl  — 业务实现
   .model         — 请求/响应 DTO
-  .message       — 消息 DTO（持久化相关）
   .config        — @Configuration Bean 定义
   .component     — 共享组件
   .client        — 声明式 HTTP 客户端（Forest）
   .constant      — 常量类
-  .chat.memory   — ChatMemory 实现
   .tools         — MCP @Tool 定义
 ```
 
@@ -116,8 +114,6 @@ ${module}:
 | 服务实现 | `XxxServiceImpl` / `XxxChatClient` | `DeepseekChatClient` |
 | 请求 DTO | `XxxRequest` | `SearXNGRequest` |
 | 响应 DTO | `XxxResult` / `XxxResponse` | `ApiResponse`, `SearXNGResult` |
-| 消息 DTO | `XxxMessage` | `ChatMessage` |
-| 配置类 | `XxxConfig` | `ChatClientConfig` |
 | 常量类 | `CXxx` | `CDateTimeFormat` |
 | 组件 | `XxxComponent` | `SSEServerComponent` |
 | MCP 工具 | `XxxTool` | `DateTimeTool`, `FileTool` |

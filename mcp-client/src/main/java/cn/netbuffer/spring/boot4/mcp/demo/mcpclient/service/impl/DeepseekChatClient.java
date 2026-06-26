@@ -1,5 +1,6 @@
 package cn.netbuffer.spring.boot4.mcp.demo.mcpclient.service.impl;
 
+import cn.netbuffer.spring.boot4.mcp.demo.mcpclient.component.NullTextSanitizerAdvisor;
 import cn.netbuffer.spring.boot4.mcp.demo.mcpclient.component.RAGAdvisor;
 import cn.netbuffer.spring.boot4.mcp.demo.mcpclient.service.LLMChatClient;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +47,7 @@ public class DeepseekChatClient implements LLMChatClient {
                 .defaultAdvisors(
                         MessageChatMemoryAdvisor.builder(chatMemory).build(),
                         new RAGAdvisor(vectorStore),
+                        new NullTextSanitizerAdvisor(),
                         new SimpleLoggerAdvisor()
                 )
                 .defaultSystem(renderedSystem)
