@@ -3,6 +3,8 @@ package cn.netbuffer.spring.boot4.mcp.demo.mcpclient.service.impl;
 import cn.netbuffer.spring.boot4.mcp.demo.mcpclient.component.NullTextSanitizerAdvisor;
 import cn.netbuffer.spring.boot4.mcp.demo.mcpclient.component.RAGAdvisor;
 import cn.netbuffer.spring.boot4.mcp.demo.mcpclient.service.LLMChatClient;
+import cn.netbuffer.spring.boot4.mcp.demo.mcpclient.tool.TodoTool;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
@@ -28,6 +30,8 @@ public class DeepseekChatClient implements LLMChatClient {
 
     private ChatClient deepseekChatClient;
     private ChatMemory chatMemory;
+    @Resource
+    private TodoTool todoTool;
 
     public DeepseekChatClient(DeepSeekChatModel deepSeekChatModel, ChatMemory chatMemory,
                               ToolCallbackProvider toolCallbackProvider, VectorStore vectorStore) {
@@ -58,6 +62,7 @@ public class DeepseekChatClient implements LLMChatClient {
     @Override
     public String q(String prompt) {
         return deepseekChatClient.prompt(prompt)
+                .tools(todoTool)
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, "default"))
                 .call().content();
     }

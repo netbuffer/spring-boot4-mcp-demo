@@ -1,0 +1,7 @@
+### 测试添加待办任务
+GET http://localhost:8081/api/chat/q?question=添加个任务记录下吧，免得后续忘了
+Accept: application/json
+
+### 设置任务名称和内容
+GET http://localhost:8081/api/chat/q?question=任务名称：修复bug，任务内容：修复用户偶尔登录系统报错的问题
+Accept: application/json
