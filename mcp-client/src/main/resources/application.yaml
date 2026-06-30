@@ -50,6 +50,10 @@ spring:
         prefix: "vtr:"
     embedding:
       transformer:
+        onnx:
+          model-uri: https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/onnx/model.onnx
+        tokenizer:
+          uri: https://huggingface.co/sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2/resolve/main/tokenizer.json
         cache:
           enabled: true
           directory: .env/transformer-cache

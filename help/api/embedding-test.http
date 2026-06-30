@@ -1,0 +1,11 @@
+### 测试文本向量相似度 - 相似的文本（预期余弦相似度接近1，欧氏距离接近0）
+GET http://localhost:8081/api/embedding/compare?text1=你好，很高兴认识你&text2=你好，认识你非常高兴
+Accept: application/json
+
+### 测试文本向量相似度 - 完全不相关的文本（预期余弦相似度偏低，欧氏距离变大）
+GET http://localhost:8081/api/embedding/compare?text1=你好，很高兴认识你&text2=今天天气真不错，我们要不要去打篮球
+Accept: application/json
+
+### 测试文本向量相似度 - 同义词替换的文本
+GET http://localhost:8081/api/embedding/compare?text1=番茄炒蛋怎么做&text2=西红柿炒鸡蛋的食谱
+Accept: application/json
